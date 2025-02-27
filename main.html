@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python: module main</title>
+</head><body>
+
+<table class="heading">
+<tr class="heading-text decor">
+<td class="title">&nbsp;<br><strong class="title">main</strong></td>
+</tr></table>
+    <p><span class="code">API&nbsp;Data&nbsp;Input&nbsp;Form<br>
+&nbsp;<br>
+This&nbsp;script&nbsp;provides&nbsp;a&nbsp;graphical&nbsp;user&nbsp;interface&nbsp;(GUI)&nbsp;for&nbsp;interacting&nbsp;with&nbsp;a&nbsp;REST&nbsp;API.<br>
+The&nbsp;GUI&nbsp;allows&nbsp;users&nbsp;to&nbsp;create,&nbsp;delete,&nbsp;and&nbsp;update&nbsp;user&nbsp;records&nbsp;by&nbsp;sending&nbsp;HTTP&nbsp;requests<br>
+to&nbsp;the&nbsp;API.&nbsp;The&nbsp;interface&nbsp;is&nbsp;built&nbsp;using&nbsp;the&nbsp;`tkinter`&nbsp;library.<br>
+&nbsp;<br>
+Modules:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;tkinter:&nbsp;Used&nbsp;for&nbsp;creating&nbsp;the&nbsp;GUI.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;requests:&nbsp;Used&nbsp;for&nbsp;sending&nbsp;HTTP&nbsp;requests&nbsp;to&nbsp;the&nbsp;API.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;messagebox:&nbsp;Used&nbsp;for&nbsp;displaying&nbsp;messages&nbsp;to&nbsp;the&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;ttk:&nbsp;Themed&nbsp;tkinter&nbsp;widgets&nbsp;for&nbsp;a&nbsp;better&nbsp;look&nbsp;and&nbsp;feel.<br>
+&nbsp;<br>
+Functions:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;<a href="#-send_to_api">send_to_api</a>():&nbsp;Determines&nbsp;which&nbsp;operation&nbsp;to&nbsp;perform&nbsp;based&nbsp;on&nbsp;user&nbsp;selection.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;<a href="#-create_user">create_user</a>():&nbsp;Sends&nbsp;a&nbsp;POST&nbsp;request&nbsp;to&nbsp;create&nbsp;a&nbsp;new&nbsp;user.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;<a href="#-delete_user_by_id">delete_user_by_id</a>():&nbsp;Sends&nbsp;a&nbsp;DELETE&nbsp;request&nbsp;to&nbsp;delete&nbsp;a&nbsp;user&nbsp;by&nbsp;ID.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;<a href="#-update_user_by_id">update_user_by_id</a>():&nbsp;Sends&nbsp;a&nbsp;PUT&nbsp;request&nbsp;to&nbsp;update&nbsp;a&nbsp;user&nbsp;by&nbsp;ID.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;<a href="#-load_user_data">load_user_data</a>():&nbsp;Sends&nbsp;a&nbsp;GET&nbsp;request&nbsp;to&nbsp;load&nbsp;user&nbsp;data&nbsp;by&nbsp;ID&nbsp;or&nbsp;UID.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;<a href="#-update_ui">update_ui</a>():&nbsp;Updates&nbsp;the&nbsp;UI&nbsp;based&nbsp;on&nbsp;the&nbsp;selected&nbsp;operation.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;<a href="#-clear_all_inputs">clear_all_inputs</a>():&nbsp;Clears&nbsp;all&nbsp;input&nbsp;fields&nbsp;in&nbsp;the&nbsp;GUI.<br>
+&nbsp;<br>
+Usage:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Run&nbsp;the&nbsp;script&nbsp;to&nbsp;launch&nbsp;the&nbsp;GUI.&nbsp;Select&nbsp;an&nbsp;operation&nbsp;(create,&nbsp;delete,&nbsp;update)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;and&nbsp;fill&nbsp;in&nbsp;the&nbsp;necessary&nbsp;fields.&nbsp;Click&nbsp;"Absenden"&nbsp;to&nbsp;send&nbsp;the&nbsp;data&nbsp;to&nbsp;the&nbsp;API.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Click&nbsp;"Clear&nbsp;All"&nbsp;to&nbsp;reset&nbsp;all&nbsp;input&nbsp;fields.</span></p>
+<p>
+<table class="section">
+<tr class="decor pkg-content-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Modules</strong></td></tr>
+    
+<tr><td class="decor pkg-content-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><table><tr><td class="multicolumn"><a href="tkinter.messagebox.html">tkinter.messagebox</a><br>
+</td><td class="multicolumn"><a href="requests.html">requests</a><br>
+</td><td class="multicolumn"><a href="tkinter.html">tkinter</a><br>
+</td><td class="multicolumn"><a href="tkinter.ttk.html">tkinter.ttk</a><br>
+</td></tr></table></td></tr></table><p>
+<table class="section">
+<tr class="decor functions-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Functions</strong></td></tr>
+    
+<tr><td class="decor functions-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><dl><dt><a name="-clear_all_inputs"><strong>clear_all_inputs</strong></a>()</dt><dd><span class="code">Clears&nbsp;all&nbsp;input&nbsp;fields&nbsp;in&nbsp;the&nbsp;GUI.</span></dd></dl>
+ <dl><dt><a name="-create_user"><strong>create_user</strong></a>()</dt><dd><span class="code">Sends&nbsp;a&nbsp;POST&nbsp;request&nbsp;to&nbsp;create&nbsp;a&nbsp;new&nbsp;user.<br>
+&nbsp;<br>
+Collects&nbsp;data&nbsp;from&nbsp;the&nbsp;entry&nbsp;fields,&nbsp;constructs&nbsp;a&nbsp;JSON&nbsp;payload,&nbsp;and&nbsp;sends&nbsp;it<br>
+to&nbsp;the&nbsp;appropriate&nbsp;API&nbsp;endpoint&nbsp;based&nbsp;on&nbsp;the&nbsp;presence&nbsp;of&nbsp;optional&nbsp;fields.</span></dd></dl>
+ <dl><dt><a name="-delete_user_by_id"><strong>delete_user_by_id</strong></a>()</dt><dd><span class="code">Sends&nbsp;a&nbsp;DELETE&nbsp;request&nbsp;to&nbsp;delete&nbsp;a&nbsp;user&nbsp;by&nbsp;ID.<br>
+&nbsp;<br>
+Collects&nbsp;the&nbsp;user&nbsp;ID&nbsp;from&nbsp;the&nbsp;entry&nbsp;field&nbsp;and&nbsp;sends&nbsp;a&nbsp;DELETE&nbsp;request&nbsp;to&nbsp;the&nbsp;API.</span></dd></dl>
+ <dl><dt><a name="-load_user_data"><strong>load_user_data</strong></a>()</dt><dd><span class="code">Sends&nbsp;a&nbsp;GET&nbsp;request&nbsp;to&nbsp;load&nbsp;user&nbsp;data&nbsp;by&nbsp;UID&nbsp;or&nbsp;ID.</span></dd></dl>
+ <dl><dt><a name="-send_to_api"><strong>send_to_api</strong></a>()</dt><dd><span class="code">Determines&nbsp;which&nbsp;operation&nbsp;to&nbsp;perform&nbsp;based&nbsp;on&nbsp;the&nbsp;selected&nbsp;radio&nbsp;button.<br>
+&nbsp;<br>
+Calls&nbsp;the&nbsp;appropriate&nbsp;function&nbsp;(create_user,&nbsp;delete_user_by_id,&nbsp;update_user_by_id)<br>
+based&nbsp;on&nbsp;the&nbsp;value&nbsp;of&nbsp;operation_var.</span></dd></dl>
+ <dl><dt><a name="-update_ui"><strong>update_ui</strong></a>()</dt><dd><span class="code">Updates&nbsp;the&nbsp;UI&nbsp;based&nbsp;on&nbsp;the&nbsp;selected&nbsp;operation.<br>
+&nbsp;<br>
+Shows&nbsp;or&nbsp;hides&nbsp;entry&nbsp;fields&nbsp;and&nbsp;buttons&nbsp;depending&nbsp;on&nbsp;whether&nbsp;the&nbsp;user&nbsp;is&nbsp;creating,<br>
+deleting,&nbsp;or&nbsp;updating&nbsp;a&nbsp;user.</span></dd></dl>
+ <dl><dt><a name="-update_user_by_id"><strong>update_user_by_id</strong></a>()</dt><dd><span class="code">Sends&nbsp;a&nbsp;PUT&nbsp;request&nbsp;to&nbsp;update&nbsp;a&nbsp;user&nbsp;by&nbsp;ID.<br>
+&nbsp;<br>
+Collects&nbsp;the&nbsp;user&nbsp;ID&nbsp;and&nbsp;updated&nbsp;data&nbsp;from&nbsp;the&nbsp;entry&nbsp;fields,&nbsp;constructs&nbsp;a&nbsp;JSON&nbsp;payload,<br>
+and&nbsp;sends&nbsp;it&nbsp;to&nbsp;the&nbsp;API.</span></dd></dl>
+</td></tr></table><p>
+<table class="section">
+<tr class="decor data-decor heading-text">
+<td class="section-title" colspan=3>&nbsp;<br><strong class="bigsection">Data</strong></td></tr>
+    
+<tr><td class="decor data-decor"><span class="code">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td><td>&nbsp;</td>
+<td class="singlecolumn"><strong>class_entry</strong> = &lt;tkinter.Entry object .!entry5&gt;<br>
+<strong>class_label</strong> = &lt;tkinter.Label object .!label6&gt;<br>
+<strong>clear_button</strong> = &lt;tkinter.ttk.Button object .!button3&gt;<br>
+<strong>firstname_entry</strong> = &lt;tkinter.Entry object .!entry2&gt;<br>
+<strong>firstname_label</strong> = &lt;tkinter.Label object .!label3&gt;<br>
+<strong>id_entry</strong> = &lt;tkinter.Entry object .!entry&gt;<br>
+<strong>id_label</strong> = &lt;tkinter.Label object .!label&gt;<br>
+<strong>id_label_entry</strong> = &lt;tkinter.Label object .!label2&gt;<br>
+<strong>lastname_entry</strong> = &lt;tkinter.Entry object .!entry3&gt;<br>
+<strong>lastname_label</strong> = &lt;tkinter.Label object .!label4&gt;<br>
+<strong>load_button</strong> = &lt;tkinter.ttk.Button object .!button2&gt;<br>
+<strong>operation_var</strong> = &lt;tkinter.IntVar object&gt;<br>
+<strong>org_entry</strong> = &lt;tkinter.Entry object .!entry4&gt;<br>
+<strong>org_label</strong> = &lt;tkinter.Label object .!label5&gt;<br>
+<strong>root</strong> = &lt;tkinter.Tk object .&gt;<br>
+<strong>style</strong> = &lt;tkinter.ttk.Style object&gt;<br>
+<strong>submit_button</strong> = &lt;tkinter.ttk.Button object .!button&gt;<br>
+<strong>uid_entry</strong> = &lt;tkinter.Entry object .!entry6&gt;<br>
+<strong>uid_label</strong> = &lt;tkinter.Label object .!label7&gt;</td></tr></table>
+</body></html>
