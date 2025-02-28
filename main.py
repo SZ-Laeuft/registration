@@ -1,4 +1,4 @@
-"""
+'''
 API Data Input Form Application
 
 This module provides a PyQt5-based GUI application for interacting with a user management API.
@@ -6,16 +6,19 @@ It allows users to perform CRUD (Create, Read, Update, Delete) operations on use
 
 Classes:
     ApiDataInputForm: The main application window for the API data input form.
-"""
+'''
+
+# Optional: If you want pydoc to ignore the module-level docstring, uncomment the following line:
+# __doc__ = None
 
 import sys
 import logging
 from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QRadioButton, QMessageBox, QGroupBox, QDesktopWidget
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
+    QPushButton, QRadioButton, QMessageBox, QGroupBox, QDesktopWidget, QSizePolicy
 )
 from PyQt5.QtCore import Qt
 import requests
-from PyQt5.QtWidgets import QSizePolicy
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
