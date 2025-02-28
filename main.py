@@ -1,3 +1,13 @@
+"""
+API Data Input Form Application
+
+This module provides a PyQt5-based GUI application for interacting with a user management API.
+It allows users to perform CRUD (Create, Read, Update, Delete) operations on user data by sending HTTP requests to a specified API endpoint.
+
+Classes:
+    ApiDataInputForm: The main application window for the API data input form.
+"""
+
 import sys
 import logging
 from PyQt5.QtWidgets import (
@@ -7,12 +17,20 @@ from PyQt5.QtCore import Qt
 import requests
 from PyQt5.QtWidgets import QSizePolicy
 
-
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
 class ApiDataInputForm(QMainWindow):
+    """
+    The main application window for the API data input form.
+
+    This class provides a GUI for interacting with a user management API. It allows users to
+    perform operations such as creating, updating, and deleting users by sending HTTP requests
+    to a specified API endpoint.
+    """
+
     def __init__(self):
+        """Initialize the ApiDataInputForm window."""
         super().__init__()
         self.setWindowTitle("API Data Input Form")
         self.setGeometry(100, 100, 600, 600)
@@ -96,21 +114,8 @@ class ApiDataInputForm(QMainWindow):
 
         # Initialize UI
         self.update_ui(1)
-
         self.operation_group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
-    class ApiDataInputForm(QMainWindow):
-        def __init__(self):
-            # ... (existing code)
-
-            # Add ID input field to the layout
-            self.layout.addWidget(self.id_label)
-            self.layout.addWidget(self.id_entry)
-
-            # Store the layout item for the ID entry
-            self.id_entry_layout_item = self.layout.itemAt(self.layout.count() - 1)
-
-            # ... (rest of existing code)
     def center(self):
         """Center the window on the screen."""
         qr = self.frameGeometry()
@@ -121,56 +126,26 @@ class ApiDataInputForm(QMainWindow):
     def get_stylesheet(self):
         """Return the stylesheet for the application."""
         return """
-            QMainWindow {
-                background-color: #f5f5f5;
-            }
+            QMainWindow { background-color: #f5f5f5; }
             QGroupBox {
-                font-size: 25px;
-                font-weight: bold;
-                color: #333;
-                border: 2px solid #0078d7;
-                border-radius: 10px;
-                margin-top: 20px;
-                padding-top: 20px;
-                padding-bottom: 20px; 
+                font-size: 25px; font-weight: bold; color: #333;
+                border: 2px solid #0078d7; border-radius: 10px;
+                margin-top: 20px; padding-top: 20px; padding-bottom: 20px;
             }
-            QLabel {
-                font-size: 25px;
-                color: #333;
-            }
+            QLabel { font-size: 25px; color: #333; }
             QLineEdit {
-                font-size: 25px;
-                padding: 10px;
-                border: 2px solid #ccc;
-                border-radius: 5px;
-                background-color: #fff;
+                font-size: 25px; padding: 10px; border: 2px solid #ccc;
+                border-radius: 5px; background-color: #fff;
             }
-            QLineEdit:focus {
-                border: 2px solid #0078d7;
-            }
+            QLineEdit:focus { border: 2px solid #0078d7; }
             QPushButton {
-                font-size: 25px;
-                font-weight: bold;
-                padding: 12px 24px;
-                background-color: #0078d7;
-                color: white;
-                border: none;
-                border-radius: 5px;
+                font-size: 25px; font-weight: bold; padding: 12px 24px;
+                background-color: #0078d7; color: white; border: none; border-radius: 5px;
             }
-            QPushButton:hover {
-                background-color: #005bb5;
-            }
-            QPushButton:pressed {
-                background-color: #004080;
-            }
-            QRadioButton {
-                font-size: 25px;
-                color: #333;
-            }
-            QRadioButton::indicator {
-                width: 16px;
-                height: 16px;
-            }
+            QPushButton:hover { background-color: #005bb5; }
+            QPushButton:pressed { background-color: #004080; }
+            QRadioButton { font-size: 25px; color: #333; }
+            QRadioButton::indicator { width: 16px; height: 16px; }
         """
 
     def send_to_api(self):
