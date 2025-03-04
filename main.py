@@ -176,11 +176,11 @@ class ApiDataInputForm(QMainWindow):
         headers = {'Content-Type': 'application/json'}
 
         if class_value and uid_value:
-            url = 'https://192.168.68.116:44320/create-user-that-has-everything'
+            url = 'https://szl-server:44320/create-user-that-has-everything'
         elif class_value:
-            url = 'https://192.168.68.116:44320/create-user-that-has-no-uid'
+            url = 'https://szl-server:44320/create-user-that-has-no-uid'
         else:
-            url = 'https://192.168.68.116:44320/create-user-that-has-no-uid-and-no-class'
+            url = 'https://szl-server:44320/create-user-that-has-no-uid-and-no-class'
 
         self.send_request(url, 'POST', data, headers, "User created successfully!")
 
@@ -191,7 +191,7 @@ class ApiDataInputForm(QMainWindow):
             QMessageBox.warning(self, "Warning", "Please enter a user ID.")
             return
 
-        url = f'https://192.168.68.116:44320/api/DeleteUserById/{user_id}'
+        url = f'https://szl-server:44320/api/DeleteUserById/{user_id}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'DELETE', headers=headers, success_message="User deleted successfully!")
@@ -211,7 +211,7 @@ class ApiDataInputForm(QMainWindow):
             "organisation": self.org_entry.text() or None
         }
 
-        url = f'https://192.168.68.116:44320/api/ModifyUser/{user_id}'
+        url = f'https://szl-server:44320/api/ModifyUser/{user_id}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'PUT', data, headers, "User updated successfully!")
@@ -255,14 +255,14 @@ class ApiDataInputForm(QMainWindow):
         if uid_number:
             try:
                 uid_number = float(uid_number)
-                url = f'https://192.168.68.116:44320/api/ReadUserUID?uid={uid_number}'
+                url = f'https://szl-server:44320/api/ReadUserUID?uid={uid_number}'
             except ValueError:
                 QMessageBox.critical(self, "Error", "Invalid UID.")
                 return
         elif id_number:
             try:
                 id_number = int(id_number)
-                url = f'https://192.168.68.116:44320/api/ReadUserID/{id_number}'
+                url = f'https://szl-server:44320/api/ReadUserID/{id_number}'
             except ValueError:
                 QMessageBox.critical(self, "Error", "Invalid user ID.")
                 return
