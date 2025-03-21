@@ -50,7 +50,7 @@ class ApiDataInputForm(QMainWindow):
         self.layout.setContentsMargins(20, 20, 20, 20)
 
         # Operation selection
-        self.operation_group = QGroupBox("Select Operation")
+        self.operation_group = QGroupBox("User Managment")
         self.operation_layout = QHBoxLayout()
         self.operation_var = 1  # Default to "Create User"
 
@@ -71,10 +71,11 @@ class ApiDataInputForm(QMainWindow):
         self.layout.addWidget(self.operation_group)
 
         # Input fields
-        self.id_label = QLabel("User ID:")
-        self.id_entry = QLineEdit()
-        self.layout.addWidget(self.id_label)
-        self.layout.addWidget(self.id_entry)
+
+        self.uid_label = QLabel("UID:")
+        self.uid_entry = QLineEdit()
+        self.layout.addWidget(self.uid_label)
+        self.layout.addWidget(self.uid_entry)
 
         self.firstname_label = QLabel("Firstname:")
         self.firstname_entry = QLineEdit()
@@ -96,10 +97,7 @@ class ApiDataInputForm(QMainWindow):
         self.layout.addWidget(self.class_label)
         self.layout.addWidget(self.class_entry)
 
-        self.uid_label = QLabel("UID:")
-        self.uid_entry = QLineEdit()
-        self.layout.addWidget(self.uid_label)
-        self.layout.addWidget(self.uid_entry)
+
 
         # Buttons
         self.submit_button = QPushButton("Submit")
@@ -186,19 +184,19 @@ class ApiDataInputForm(QMainWindow):
 
     def delete_user_by_id(self):
         """Send a DELETE request to delete a user by ID."""
-        user_id = self.id_entry.text()
+        user_uid = self.uid_entry.text()
         if not user_id:
             QMessageBox.warning(self, "Warning", "Please enter a user ID.")
             return
 
-        url = f'https://szl-server:44320/api/DeleteUserById/{user_id}'
+        url = f'https://szl-server:44320/api/DeleteUserById/{user_uid}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'DELETE', headers=headers, success_message="User deleted successfully!")
 
     def update_user_by_id(self):
-        """Send a PUT request to update a user by ID."""
-        user_id = self.id_entry.text()
+        """Send a PUT request to update a user by UID."""
+        user_id = self.uid_entry.text()
         if not user_id:
             QMessageBox.warning(self, "Warning", "Please enter a user ID.")
             return
@@ -281,7 +279,6 @@ class ApiDataInputForm(QMainWindow):
                 def clean_value(value):
                     return "" if value == {} else value
 
-                self.id_entry.setText(str(clean_value(user_data.get('id', ''))))
                 self.firstname_entry.setText(clean_value(user_data.get('firstName', '')))
                 self.lastname_entry.setText(clean_value(user_data.get('lastName', '')))
                 self.org_entry.setText(clean_value(user_data.get('organisation', '')))
@@ -301,8 +298,6 @@ class ApiDataInputForm(QMainWindow):
         self.operation_var = operation
 
         if operation == 1:  # Create User
-            self.id_label.hide()
-            self.id_entry.hide()
             self.firstname_label.show()
             self.firstname_entry.show()
             self.lastname_label.show()
@@ -315,8 +310,6 @@ class ApiDataInputForm(QMainWindow):
             self.uid_entry.show()
             self.load_button.hide()
         elif operation == 2:  # Delete User
-            self.id_label.show()
-            self.id_entry.show()
             self.firstname_label.hide()
             self.firstname_entry.hide()
             self.lastname_label.hide()
@@ -325,12 +318,10 @@ class ApiDataInputForm(QMainWindow):
             self.org_entry.hide()
             self.class_label.hide()
             self.class_entry.hide()
-            self.uid_label.hide()
-            self.uid_entry.hide()
+            self.uid_label.show()
+            self.uid_entry.show()
             self.load_button.hide()
         elif operation == 3:  # Update User
-            self.id_label.show()
-            self.id_entry.show()
             self.firstname_label.show()
             self.firstname_entry.show()
             self.lastname_label.show()
@@ -339,13 +330,10 @@ class ApiDataInputForm(QMainWindow):
             self.org_entry.show()
             self.class_label.show()
             self.class_entry.show()
-            self.uid_label.show()
-            self.uid_entry.show()
             self.load_button.show()
 
     def clear_all_inputs(self):
         """Clear all input fields."""
-        self.id_entry.clear()
         self.firstname_entry.clear()
         self.lastname_entry.clear()
         self.org_entry.clear()
