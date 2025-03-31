@@ -173,23 +173,21 @@ class ApiDataInputForm(QMainWindow):
 
         headers = {'Content-Type': 'application/json'}
 
-        if class_value and uid_value:
+        if class_value:
             url = 'https://szl-server:44320/create-user-that-has-everything'
-        elif class_value:
-            url = 'https://szl-server:44320/create-user-that-has-no-uid'
         else:
-            url = 'https://szl-server:44320/create-user-that-has-no-uid-and-no-class'
+            url = 'https://szl-server:44320/create-user-that-has-no-class'
 
         self.send_request(url, 'POST', data, headers, "User created successfully!")
 
     def delete_user_by_id(self):
-        """Send a DELETE request to delete a user by ID."""
+        """Send a DELETE request to delete a user by UID."""
         user_uid = self.uid_entry.text()
-        if not user_id:
-            QMessageBox.warning(self, "Warning", "Please enter a user ID.")
+        if not user_uid:
+            QMessageBox.warning(self, "Warning", "Please enter a user UID.")
             return
 
-        url = f'https://szl-server:44320/api/DeleteUserById/{user_uid}'
+        url = f'https://szl-server:44320/api/DeleteUserByUUid/{user_uid}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'DELETE', headers=headers, success_message="User deleted successfully!")
@@ -237,42 +235,44 @@ class ApiDataInputForm(QMainWindow):
             QMessageBox.critical(self, "Error", str(e))
 
     def load_user_data(self):
-        """Send a GET request to load user data by UID or ID."""
+        """Send a GET request to load user data by UID or Firstname and Lastname."""
         uid_number = self.uid_entry.text().strip()
-        id_number = self.id_entry.text().strip()
+        firstname = self.firstname_entry.text().strip()
+        lastname = self.lastname_entry.text().strip()
 
-        if not uid_number and not id_number:
-            QMessageBox.critical(self, "Error", "Please enter a user ID or UID.")
+        if not uid_number and not (firstname and lastname):
+            QMessageBox.critical(self, "Error", "Please enter a user UID or Firstname and Lastname.")
             return
 
-        if uid_number and id_number:
-            QMessageBox.critical(self, "Error", "You can only search by one parameter (ID or UID).")
+        if uid_number and (firstname and lastname):
+            QMessageBox.critical(self, "Error", "You can only search by UID or Firstname+Lastname, not both.")
             return
-
-        url = ''
-        if uid_number:
-            try:
-                uid_number = float(uid_number)
-                url = f'https://szl-server:44320/api/ReadUserUID?uid={uid_number}'
-            except ValueError:
-                QMessageBox.critical(self, "Error", "Invalid UID.")
-                return
-        elif id_number:
-            try:
-                id_number = int(id_number)
-                url = f'https://szl-server:44320/api/ReadUserID/{id_number}'
-            except ValueError:
-                QMessageBox.critical(self, "Error", "Invalid user ID.")
-                return
 
         headers = {'Content-Type': 'application/json'}
 
+        # Check if searching by UID or Firstname+Lastname
+        if uid_number:
+            try:
+                uid_number = float(uid_number)  # Ensure it's a number
+                url = f'https://szl-server:44320/api/ReadUserUID?uid={uid_number}'
+            except ValueError:
+                QMessageBox.critical(self, "Error", "Invalid UID format.")
+                return
+        else:
+            from requests.utils import quote
+            url = f'https://szl-server:44320/api/ReadUserByName?firstName={quote(firstname)}&lastName={quote(lastname)}'
+
         try:
             response = requests.get(url, headers=headers, verify=False)
-            if response.status_code == 200:
-                user_data = response.json()
 
-                if not user_data or user_data == {}:
+            if response.status_code == 200:
+                try:
+                    user_data = response.json()
+                except ValueError:
+                    QMessageBox.warning(self, "Warning", "Invalid response format from server.")
+                    return
+
+                if not user_data:
                     QMessageBox.warning(self, "Warning", "No data found.")
                     return
 
