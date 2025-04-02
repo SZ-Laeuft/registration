@@ -1,21 +1,8 @@
-'''
-API Data Input Form Application
-
-This module provides a PyQt5-based GUI application for interacting with a user management API.
-It allows users to perform CRUD (Create, Read, Update, Delete) operations on user data by sending HTTP requests to a specified API endpoint.
-
-Classes:
-    ApiDataInputForm: The main application window for the API data input form.
-'''
-
-# Optional: If you want pydoc to ignore the module-level docstring, uncomment the following line:
-# __doc__ = None
-
 import sys
 import logging
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
-    QPushButton, QRadioButton, QMessageBox, QGroupBox, QDesktopWidget, QSizePolicy
+    QPushButton, QRadioButton, QMessageBox, QGroupBox, QDesktopWidget, QSizePolicy, QButtonGroup
 )
 from PyQt5.QtCore import Qt
 import requests
@@ -49,29 +36,50 @@ class ApiDataInputForm(QMainWindow):
         self.layout.setSpacing(20)
         self.layout.setContentsMargins(20, 20, 20, 20)
 
-        # Operation selection
-        self.operation_group = QGroupBox("User Managment")
-        self.operation_layout = QHBoxLayout()
-        self.operation_var = 1  # Default to "Create User"
+        # Initialize radio button group
+        self.radio_button_group = QButtonGroup(self)
+
+        # Operation selection - User Management
+        self.operation_group1 = QGroupBox("User Management")
+        self.operation_layout1 = QHBoxLayout()
 
         self.create_user_radio = QRadioButton("Create User")
         self.create_user_radio.setChecked(True)
         self.create_user_radio.toggled.connect(lambda: self.update_ui(1))
-        self.operation_layout.addWidget(self.create_user_radio)
+        self.operation_layout1.addWidget(self.create_user_radio)
+        self.radio_button_group.addButton(self.create_user_radio)
 
         self.delete_user_radio = QRadioButton("Delete User")
         self.delete_user_radio.toggled.connect(lambda: self.update_ui(2))
-        self.operation_layout.addWidget(self.delete_user_radio)
+        self.operation_layout1.addWidget(self.delete_user_radio)
+        self.radio_button_group.addButton(self.delete_user_radio)
 
         self.update_user_radio = QRadioButton("Update User")
         self.update_user_radio.toggled.connect(lambda: self.update_ui(3))
-        self.operation_layout.addWidget(self.update_user_radio)
+        self.operation_layout1.addWidget(self.update_user_radio)
+        self.radio_button_group.addButton(self.update_user_radio)
 
-        self.operation_group.setLayout(self.operation_layout)
-        self.layout.addWidget(self.operation_group)
+        self.operation_group1.setLayout(self.operation_layout1)
+        self.layout.addWidget(self.operation_group1)
+
+        # Operation selection - Editing Value
+        self.operation_group2 = QGroupBox("Editing Value")
+        self.operation_layout2 = QHBoxLayout()
+
+        self.donation_radio = QRadioButton("Donation")
+        self.donation_radio.toggled.connect(lambda: self.update_ui(4))
+        self.operation_layout2.addWidget(self.donation_radio)
+        self.radio_button_group.addButton(self.donation_radio)
+
+        self.gift_collect_radio = QRadioButton("Gift Collect")
+        self.gift_collect_radio.toggled.connect(lambda: self.update_ui(5))
+        self.operation_layout2.addWidget(self.gift_collect_radio)
+        self.radio_button_group.addButton(self.gift_collect_radio)
+
+        self.operation_group2.setLayout(self.operation_layout2)
+        self.layout.addWidget(self.operation_group2)
 
         # Input fields
-
         self.uid_label = QLabel("UID:")
         self.uid_entry = QLineEdit()
         self.layout.addWidget(self.uid_label)
@@ -97,8 +105,6 @@ class ApiDataInputForm(QMainWindow):
         self.layout.addWidget(self.class_label)
         self.layout.addWidget(self.class_entry)
 
-
-
         # Buttons
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.send_to_api)
@@ -115,7 +121,8 @@ class ApiDataInputForm(QMainWindow):
 
         # Initialize UI
         self.update_ui(1)
-        self.operation_group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.operation_group1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        self.operation_group2.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
     def center(self):
         """Center the window on the screen."""
