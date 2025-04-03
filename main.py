@@ -19,9 +19,9 @@ class SmartCardReaderThread(QThread):
 
     def run(self):
         while True:
-            # Get available smart card readers
-            r = readers()
             try:
+                # Get available smart card readers
+                r = readers()
                 connection = r[0].createConnection()
                 connection.connect()
                 # APDU command to get UID (for most NFC cards)
