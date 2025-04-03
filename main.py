@@ -4,19 +4,45 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit,
     QPushButton, QRadioButton, QMessageBox, QGroupBox, QDesktopWidget, QSizePolicy, QButtonGroup
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 import requests
+from smartcard.System import readers
+import threading
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
+
+
+class SmartCardReaderThread(QThread):
+    # Signal to send UID data back to the main thread
+    uid_signal = pyqtSignal(str)
+
+    def run(self):
+        while True:
+            # Get available smart card readers
+            r = readers()
+            try:
+                connection = r[0].createConnection()
+                connection.connect()
+                # APDU command to get UID (for most NFC cards)
+                command = [0xFF, 0xCA, 0x00, 0x00, 0x00]
+                response, sw1, sw2 = connection.transmit(command)
+
+                # Check if the command was successful
+                if sw1 == 0x90:
+                    # Convert the response to a string of digits (decimal)
+                    uid_value = ''.join(str(byte) for byte in response)
+                    # Emit the signal to update the UID in the main thread
+                    self.uid_signal.emit(uid_value)
+            except Exception as e:
+                continue
+
 
 class ApiDataInputForm(QMainWindow):
     """
     The main application window for the API data input form.
 
-    This class provides a GUI for interacting with a user management API. It allows users to
-    perform operations such as creating, updating, and deleting users by sending HTTP requests
-    to a specified API endpoint.
+    This class provides a GUI for interacting with a user management API.
     """
 
     def __init__(self):
@@ -105,6 +131,11 @@ class ApiDataInputForm(QMainWindow):
         self.layout.addWidget(self.class_label)
         self.layout.addWidget(self.class_entry)
 
+        self.Amount_label = QLabel("Amount:")
+        self.Amount_entry = QLineEdit()
+        self.layout.addWidget(self.Amount_label)
+        self.layout.addWidget(self.Amount_entry)
+
         # Buttons
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.send_to_api)
@@ -124,46 +155,27 @@ class ApiDataInputForm(QMainWindow):
         self.operation_group1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
         self.operation_group2.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 
-    def center(self):
-        """Center the window on the screen."""
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
+        # Initialize the smart card reader thread
+        self.reader_thread = SmartCardReaderThread()
+        self.reader_thread.uid_signal.connect(self.update_uid_entry)
+        self.reader_thread.start()
 
-    def get_stylesheet(self):
-        """Return the stylesheet for the application."""
-        return """
-            QMainWindow { background-color: #f5f5f5; }
-            QGroupBox {
-                font-size: 25px; font-weight: bold; color: #333;
-                border: 2px solid #0078d7; border-radius: 10px;
-                margin-top: 20px; padding-top: 20px; padding-bottom: 20px;
-            }
-            QLabel { font-size: 25px; color: #333; }
-            QLineEdit {
-                font-size: 25px; padding: 10px; border: 2px solid #ccc;
-                border-radius: 5px; background-color: #fff;
-            }
-            QLineEdit:focus { border: 2px solid #0078d7; }
-            QPushButton {
-                font-size: 25px; font-weight: bold; padding: 12px 24px;
-                background-color: #0078d7; color: white; border: none; border-radius: 5px;
-            }
-            QPushButton:hover { background-color: #005bb5; }
-            QPushButton:pressed { background-color: #004080; }
-            QRadioButton { font-size: 25px; color: #333; }
-            QRadioButton::indicator { width: 16px; height: 16px; }
-        """
+    def update_uid_entry(self, uid):
+        """Update the UID entry with the data received from the smart card reader."""
+        self.uid_entry.setText(uid)
 
     def send_to_api(self):
         """Determine which operation to perform based on the selected radio button."""
         if self.operation_var == 1:  # Create User
             self.create_user()
         elif self.operation_var == 2:  # Delete User
-            self.delete_user_by_id()
+            self.delete_user_by_uid()
         elif self.operation_var == 3:  # Update User
-            self.update_user_by_id()
+            self.update_user_by_uid()
+        elif self.operation_var == 4:  # Donation
+            self.donation_by_uid()
+        elif self.operation_var == 5:  # Gift Colected
+            self.gift_collect_by_uid()
 
     def create_user(self):
         """Send a POST request to create a new user."""
@@ -187,7 +199,7 @@ class ApiDataInputForm(QMainWindow):
 
         self.send_request(url, 'POST', data, headers, "User created successfully!")
 
-    def delete_user_by_id(self):
+    def delete_user_by_uid(self):
         """Send a DELETE request to delete a user by UID."""
         user_uid = self.uid_entry.text()
         if not user_uid:
@@ -199,7 +211,7 @@ class ApiDataInputForm(QMainWindow):
 
         self.send_request(url, 'DELETE', headers=headers, success_message="User deleted successfully!")
 
-    def update_user_by_id(self):
+    def update_user_by_uid(self):
         """Send a PUT request to update a user by UID."""
         user_id = self.uid_entry.text()
         if not user_id:
@@ -238,85 +250,30 @@ class ApiDataInputForm(QMainWindow):
                 QMessageBox.critical(self, "Error", f"Error: {response.status_code}\n{response.text}")
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(self, "Error", f"Network error: {str(e)}")
-        except ValueError as e:
-            QMessageBox.critical(self, "Error", str(e))
 
-    def load_user_data(self):
-        """Send a GET request to load user data by UID or Firstname and Lastname."""
-        uid_number = self.uid_entry.text().strip()
-        firstname = self.firstname_entry.text().strip()
-        lastname = self.lastname_entry.text().strip()
+    def update_ui(self, operation_var):
+        """Update UI based on selected operation."""
+        self.operation_var = operation_var
+        self.clear_all_inputs()
 
-        if not uid_number and not (firstname and lastname):
-            QMessageBox.critical(self, "Error", "Please enter a user UID or Firstname and Lastname.")
-            return
-
-        if uid_number and (firstname and lastname):
-            QMessageBox.critical(self, "Error", "You can only search by UID or Firstname+Lastname, not both.")
-            return
-
-        headers = {'Content-Type': 'application/json'}
-
-        # Check if searching by UID or Firstname+Lastname
-        if uid_number:
-            try:
-                uid_number = float(uid_number)  # Ensure it's a number
-                url = f'https://szl-server:44320/api/ReadUserUID?uid={uid_number}'
-            except ValueError:
-                QMessageBox.critical(self, "Error", "Invalid UID format.")
-                return
-        else:
-            from requests.utils import quote
-            url = f'https://szl-server:44320/api/ReadUserByName?firstName={quote(firstname)}&lastName={quote(lastname)}'
-
-        try:
-            response = requests.get(url, headers=headers, verify=False)
-
-            if response.status_code == 200:
-                try:
-                    user_data = response.json()
-                except ValueError:
-                    QMessageBox.warning(self, "Warning", "Invalid response format from server.")
-                    return
-
-                if not user_data:
-                    QMessageBox.warning(self, "Warning", "No data found.")
-                    return
-
-                def clean_value(value):
-                    return "" if value == {} else value
-
-                self.firstname_entry.setText(clean_value(user_data.get('firstName', '')))
-                self.lastname_entry.setText(clean_value(user_data.get('lastName', '')))
-                self.org_entry.setText(clean_value(user_data.get('organisation', '')))
-                self.class_entry.setText(clean_value(user_data.get('schoolClass', '')))
-                self.uid_entry.setText(str(clean_value(user_data.get('uid', ''))))
-
-                QMessageBox.information(self, "Success", "Data loaded successfully!")
-            elif response.status_code == 400:
-                QMessageBox.critical(self, "Error", "Invalid request. Please check your input.")
-            else:
-                QMessageBox.critical(self, "Error", f"Error: {response.status_code}\n{response.text}")
-        except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
-
-    def update_ui(self, operation):
-        """Update the UI based on the selected operation."""
-        self.operation_var = operation
-
-        if operation == 1:  # Create User
+        # Hide and show the relevant input fields and labels based on the selected operation
+        if operation_var == 1:  # Create User
+            self.uid_label.show()
+            self.uid_entry.show()
+            self.class_label.show()
+            self.class_entry.show()
             self.firstname_label.show()
             self.firstname_entry.show()
             self.lastname_label.show()
             self.lastname_entry.show()
             self.org_label.show()
             self.org_entry.show()
-            self.class_label.show()
-            self.class_entry.show()
+            self.Amount_label.hide()
+            self.Amount_entry.hide()
+            self.load_button.hide()
+        elif operation_var == 2:  # Delete User
             self.uid_label.show()
             self.uid_entry.show()
-            self.load_button.hide()
-        elif operation == 2:  # Delete User
             self.firstname_label.hide()
             self.firstname_entry.hide()
             self.lastname_label.hide()
@@ -325,10 +282,12 @@ class ApiDataInputForm(QMainWindow):
             self.org_entry.hide()
             self.class_label.hide()
             self.class_entry.hide()
+            self.Amount_label.hide()
+            self.Amount_entry.hide()
+            self.load_button.show()
+        elif operation_var == 3:  # Update User
             self.uid_label.show()
             self.uid_entry.show()
-            self.load_button.hide()
-        elif operation == 3:  # Update User
             self.firstname_label.show()
             self.firstname_entry.show()
             self.lastname_label.show()
@@ -337,15 +296,90 @@ class ApiDataInputForm(QMainWindow):
             self.org_entry.show()
             self.class_label.show()
             self.class_entry.show()
+            self.Amount_label.hide()
+            self.Amount_entry.hide()
             self.load_button.show()
+        elif operation_var == 4:  # Donation
+            self.uid_label.show()
+            self.uid_entry.show()
+            self.Amount_label.show()
+            self.Amount_entry.show()
+            self.firstname_label.hide()
+            self.firstname_entry.hide()
+            self.lastname_label.hide()
+            self.lastname_entry.hide()
+            self.org_label.hide()
+            self.org_entry.hide()
+            self.class_label.hide()
+            self.class_entry.hide()
+            self.load_button.hide()
+        elif operation_var == 5:  # Gift Collect
+            self.uid_label.show()
+            self.uid_entry.show()
+            self.Amount_label.hide()
+            self.Amount_entry.hide()
+            self.firstname_label.hide()
+            self.firstname_entry.hide()
+            self.lastname_label.hide()
+            self.lastname_entry.hide()
+            self.org_label.hide()
+            self.org_entry.hide()
+            self.class_label.hide()
+            self.class_entry.hide()
+            self.load_button.hide()
 
     def clear_all_inputs(self):
         """Clear all input fields."""
         self.firstname_entry.clear()
         self.lastname_entry.clear()
+        self.uid_entry.clear()
         self.org_entry.clear()
         self.class_entry.clear()
-        self.uid_entry.clear()
+        self.Amount_entry.clear()
+
+    def load_user_data(self):
+        """Load user data based on UID"""
+        user_uid = self.uid_entry.text()
+        if not user_uid:
+            QMessageBox.warning(self, "Warning", "Please enter a user UID to load.")
+            return
+
+        url = f'https://szl-server:44320/api/FetchUserByUID/{user_uid}'
+        headers = {'Content-Type': 'application/json'}
+
+        self.send_request(url, 'GET', headers=headers, success_message="User data loaded successfully!")
+
+    def center(self):
+        """Center the window on the screen."""
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def get_stylesheet(self):
+        """Return the stylesheet for the application."""
+        return """
+            QMainWindow { background-color: #f5f5f5; }
+            QGroupBox {
+                font-size: 25px; font-weight: bold; color: #333;
+                border: 2px solid #0078d7; border-radius: 10px;
+                margin-top: 20px; padding-top: 20px; padding-bottom: 20px;
+            }
+            QLabel { font-size: 25px; color: #333; }
+            QLineEdit {
+                font-size: 25px; padding: 10px; border: 2px solid #ccc;
+                border-radius: 5px; background-color: #fff;
+            }
+            QLineEdit:focus { border: 2px solid #0078d7; }
+            QPushButton {
+                font-size: 25px; font-weight: bold; padding: 12px 24px;
+                background-color: #0078d7; color: white; border: none; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #005bb5; }
+            QPushButton:pressed { background-color: #004080; }
+            QRadioButton { font-size: 25px; color: #333; }
+            QRadioButton::indicator { width: 16px; height: 16px; }
+        """
 
 
 if __name__ == "__main__":
