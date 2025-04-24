@@ -6,7 +6,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 import requests
-from smartcard.System import readers
+from smartcard.System import readers # pip install pyscard
 import threading
 
 # Set up logging
