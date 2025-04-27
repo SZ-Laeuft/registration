@@ -193,9 +193,9 @@ class ApiDataInputForm(QMainWindow):
         headers = {'Content-Type': 'application/json'}
 
         if class_value:
-            url = 'https://szl-server:44320/create-user-that-has-everything'
+            url = 'http://szl-server:8080/create-user-that-has-everything'
         else:
-            url = 'https://szl-server:44320/create-user-that-has-no-class'
+            url = 'http://szl-server:8080/create-user-that-has-no-class'
 
         self.send_request(url, 'POST', data, headers, "User created successfully!")
 
@@ -206,7 +206,7 @@ class ApiDataInputForm(QMainWindow):
             QMessageBox.warning(self, "Warning", "Please enter a user UID.")
             return
 
-        url = f'https://szl-server:44320/api/DeleteUserByUUid/{user_uid}'
+        url = f'http://szl-server:8080/api/DeleteUserByUUid/{user_uid}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'DELETE', headers=headers, success_message="User deleted successfully!")
@@ -226,7 +226,7 @@ class ApiDataInputForm(QMainWindow):
             "organisation": self.org_entry.text() or None
         }
 
-        url = f'https://szl-server:44320/api/ModifyUser/{user_id}'
+        url = f'http://szl-server:8080/api/ModifyUser/{user_id}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'PUT', data, headers, "User updated successfully!")
@@ -344,7 +344,7 @@ class ApiDataInputForm(QMainWindow):
             QMessageBox.warning(self, "Warning", "Please enter a user UID to load.")
             return
 
-        url = f'https://szl-server:44320/api/FetchUserByUID/{user_uid}'
+        url = f'http://szl-server:8080/api/FetchUserByUID/{user_uid}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'GET', headers=headers, success_message="User data loaded successfully!")
