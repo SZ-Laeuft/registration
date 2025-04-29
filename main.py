@@ -52,6 +52,8 @@ class ApiDataInputForm(QMainWindow):
         self.setGeometry(100, 100, 600, 600)
         self.center()
 
+        self.showFullScreen()
+
         # Apply a modern and beautiful style using QSS
         self.setStyleSheet(self.get_stylesheet())
 
