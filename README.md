@@ -43,5 +43,8 @@ This project is a PyQt5-based GUI application for managing user data through a R
 - The application connects to a server at `http://szl-server:8080`. Ensure this server is accessible and running the appropriate API services.
 
 ## Contributing
+This project was developed by students at **IT-HTL Ybbs** and is intended for educational use only. Contributions are limited to students of the institution.
 
-Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
+## Contact
+For questions or support, contact: [sz-laeuft@sz-ybbs.ac.at](mailto:sz-laeuft@sz-ybbs.ac.at)
+
