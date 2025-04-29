@@ -177,6 +177,35 @@ class ApiDataInputForm(QMainWindow):
         elif self.operation_var == 5:  # Gift Colected
             self.gift_collect_by_uid()
 
+    def donation_by_uid(self):
+        amount_value = self.Amount_entry.text()
+        uid_value = self.uid_entry.text()
+
+        if not uid_value:
+            QMessageBox.warning(self, "Warning", "Please enter a user UID.")
+            return
+        if not amount_value:
+            QMessageBox.warning(self, "Warning", "Please enter a amount.")
+            return
+        data = {
+            "amount": self.Amount_entry.text(),
+
+        }
+
+        url = f'http://szl-server:8080/api/SetDonationAmount/{uid_value}'
+        headers = {'Content-Type': 'application/json'}
+
+        self.send_request(url, 'PUT', data, headers, "User Amount set successfully!")
+
+    def gift_collect_by_uid(self):
+        uid_value = self.uid_entry.text()
+        if not uid_value:
+            QMessageBox.warning(self, "Warning", "Please enter a user UID.")
+            return
+        url = f'http://szl-server:8080/api/SetGiftCollected/{uid_value}'
+        headers = {'Content-Type': 'application/json'}
+        self.send_request(url, 'PUT', {}, headers, "User Gift collect successfully!")
+
     def create_user(self):
         """Send a POST request to create a new user."""
         class_value = self.class_entry.text()
