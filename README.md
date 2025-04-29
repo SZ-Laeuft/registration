@@ -29,11 +29,6 @@ This project is a PyQt5-based GUI application for managing user data through a R
    cd registration
    ```
 
-3. Install the required packages:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
 ## Usage
 
 1. Run the application:
