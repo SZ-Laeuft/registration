@@ -14,27 +14,33 @@ logging.basicConfig(level=logging.INFO)
 
 
 class SmartCardReaderThread(QThread):
-    # Signal to send UID data back to the main thread
     uid_signal = pyqtSignal(str)
 
     def run(self):
+        from smartcard.System import readers
+        from smartcard.Exceptions import NoCardException
+
+        GET_UID = [0xFF, 0xCA, 0x00, 0x00, 0x00]
+        MFRC522_UID_PREFIX_BYTE = 0x88
+
         while True:
             try:
-                # Get available smart card readers
                 r = readers()
+                if not r:
+                    continue
                 connection = r[0].createConnection()
                 connection.connect()
-                # APDU command to get UID (for most NFC cards)
-                command = [0xFF, 0xCA, 0x00, 0x00, 0x00]
-                response, sw1, sw2 = connection.transmit(command)
-
-                # Check if the command was successful
-                if sw1 == 0x90:
-                    # Convert the response to a string of digits (decimal)
-                    uid_value = ''.join(str(byte) for byte in response)
-                    # Emit the signal to update the UID in the main thread
-                    self.uid_signal.emit(uid_value)
-            except Exception as e:
+                response, sw1, sw2 = connection.transmit(GET_UID)
+                if sw1 == 0x90 and len(response) >= 3:
+                    m1 = MFRC522_UID_PREFIX_BYTE
+                    m2, m3, m4 = response[0], response[1], response[2]
+                    m5_bcc = m1 ^ m2 ^ m3 ^ m4
+                    mfrc522_like_uid = [m1, m2, m3, m4, m5_bcc]
+                    uid_decimal = str(int(''.join(f"{b:02X}" for b in mfrc522_like_uid), 16))
+                    self.uid_signal.emit(uid_decimal)
+            except NoCardException:
+                continue
+            except Exception:
                 continue
 
 
