@@ -245,29 +245,32 @@ class ApiDataInputForm(QMainWindow):
         self.send_request(url, 'PUT', data, headers, "User Amount set successfully!")
 
     def gift_collect_by_uid(self):
-        """
-                Mark a gift as collected for a user identified by their UID.
-
-                Validates the UID and sends a PUT request to the server to update the gift
-                collection status for the specified user.
-
-                Raises a warning message if the UID is not provided.
-
-                Sends a PUT request to the endpoint:
-                'http://szl-server:8080/api/SetGiftCollected/{uid_value}'
-
-                If the request is successful, a success message is displayed.
-
-                Returns:
-                    None
-        """
         uid_value = self.uid_entry.text()
         if not uid_value:
             QMessageBox.warning(self, "Warning", "Please enter a user UID.")
             return
         url = f'http://szl-server:8080/api/SetGiftCollected/{uid_value}'
         headers = {'Content-Type': 'application/json'}
-        self.send_request(url, 'PUT', {}, headers, "User Gift collect successfully!")
+        try:
+            response = requests.put(url, json={}, headers=headers, verify=False)
+            if response.status_code == 200:
+                data = response.json()
+                updated_gifts = data.get("updatedGifts", {})
+                messages = []
+                if updated_gifts.get("gift1Collected"):
+                    messages.append("Gift 1 erhalten")
+                if updated_gifts.get("gift2Collected"):
+                    messages.append("Gift 2 erhalten")
+                if updated_gifts.get("gift3Collected"):
+                    messages.append("Gift 3 erhalten")
+                if messages:
+                    QMessageBox.information(self, "Gift Collected", "\n".join(messages))
+                else:
+                    QMessageBox.information(self, "Gift Collected", "No gifts collected.")
+            else:
+                QMessageBox.critical(self, "Error", f"Error: {response.status_code}\n{response.text}")
+        except requests.exceptions.RequestException as e:
+            QMessageBox.critical(self, "Error", f"Network error: {str(e)}")
 
     def create_user(self):
         """"
