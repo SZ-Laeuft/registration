@@ -61,10 +61,10 @@ class ApiDataInputForm(QMainWindow):
         """
         super().__init__()
         self.setWindowTitle("API Data Input Form")
-        self.setGeometry(100, 100, 600, 600)
+        self.setGeometry(100, 100, 600, 1000)
         self.center()
 
-        self.setMinimumSize(600, 600)
+        self.setMinimumSize(600, 1000)
         self.show()
 
         # Apply a modern and beautiful style using QSS
@@ -559,24 +559,24 @@ class ApiDataInputForm(QMainWindow):
         return """
             QMainWindow { background-color: #f5f5f5; }
             QGroupBox {
-                font-size: 25px; font-weight: bold; color: #333;
+                font-size: 22px; font-weight: bold; color: #333;
                 border: 2px solid #0078d7; border-radius: 10px;
-                margin-top: 20px; padding-top: 20px; padding-bottom: 20px;
+                margin-top: 12px; padding-top: 12px; padding-bottom: 12px;
             }
-            QLabel { font-size: 25px; color: #333; }
+            QLabel { font-size: 22px; color: #333; }
             QLineEdit {
-                font-size: 25px; padding: 10px; border: 2px solid #ccc;
+                font-size: 22px; padding: 8px; border: 2px solid #ccc;
                 border-radius: 5px; background-color: #fff;
             }
             QLineEdit:focus { border: 2px solid #0078d7; }
             QPushButton {
-                font-size: 25px; font-weight: bold; padding: 12px 24px;
+                font-size: 22px; font-weight: bold; padding: 10px 20px;
                 background-color: #0078d7; color: white; border: none; border-radius: 5px;
             }
             QPushButton:hover { background-color: #005bb5; }
             QPushButton:pressed { background-color: #004080; }
-            QRadioButton { font-size: 25px; color: #333; }
-            QRadioButton::indicator { width: 16px; height: 16px; }
+            QRadioButton { font-size: 22px; color: #333; }
+            QRadioButton::indicator { width: 18px; height: 18px; }
         """
 
 
