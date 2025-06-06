@@ -235,8 +235,7 @@ class ApiDataInputForm(QMainWindow):
             QMessageBox.warning(self, "Warning", "Please enter a amount.")
             return
         data = {
-            "amount": self.Amount_entry.text(),
-
+            "amount": self.Amount_entry.text().lower(),
         }
 
         url = f'http://szl-server:8080/api/SetDonationAmount/{uid_value}'
@@ -292,11 +291,11 @@ class ApiDataInputForm(QMainWindow):
         uid_value = self.uid_entry.text()
 
         data = {
-            "firstname": self.firstname_entry.text(),
-            "lastname": self.lastname_entry.text(),
-            "organisation": self.org_entry.text(),
-            "school_class": class_value if class_value else None,
-            "uid": uid_value if uid_value else None,
+            "firstname": self.firstname_entry.text().lower(),
+            "lastname": self.lastname_entry.text().lower(),
+            "organisation": self.org_entry.text().lower(),
+            "school_class": self.class_entry.text().lower() if self.class_entry.text() else None,
+            "uid": self.uid_entry.text().lower() if self.uid_entry.text() else None,
         }
 
         headers = {'Content-Type': 'application/json'}
@@ -357,11 +356,11 @@ class ApiDataInputForm(QMainWindow):
             return
 
         data = {
-            "firstName": self.firstname_entry.text() or None,
-            "lastName": self.lastname_entry.text() or None,
-            "uid": self.uid_entry.text() or None,
-            "schoolClass": self.class_entry.text() or None,
-            "organisation": self.org_entry.text() or None
+            "firstName": self.firstname_entry.text().lower() or None,
+            "lastName": self.lastname_entry.text().lower() or None,
+            "uid": self.uid_entry.text().lower() or None,
+            "schoolClass": self.class_entry.text().lower() or None,
+            "organisation": self.org_entry.text().lower() or None
         }
 
         url = f'http://szl-server:8080/api/User/{user_id}'
