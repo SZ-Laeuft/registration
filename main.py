@@ -189,13 +189,13 @@ class ApiDataInputForm(QMainWindow):
 
     def send_to_api(self):
         """
-              Determine which operation to perform based on the selected radio button.
+        Determine which operation to perform based on the selected radio button.
 
-              Executes the appropriate method for creating, updating, deleting users,
-              or managing donations and gift collections.
+        Executes the appropriate method for creating, updating, deleting users,
+        or managing donations and gift collections.
 
-              Returns:
-                  None
+        Returns:
+            None
         """
         if self.operation_var == 1:  # Create User
             self.create_user()
@@ -210,21 +210,7 @@ class ApiDataInputForm(QMainWindow):
 
     def donation_by_uid(self):
         """
-               Set a donation amount for a user identified by their UID.
-
-               This method retrieves the UID and donation amount from the input fields,
-               validates them, and sends a PUT request to the server to update the donation
-               amount for the specified user.
-
-               Raises a warning message if the UID or amount is not provided.
-
-               Sends a PUT request to the endpoint:
-               'http://192.168.68.68:8080/api/SetDonationAmount/{uid_value}'
-
-               If the request is successful, a success message is displayed.
-
-               Returns:
-                   None
+        Set a donation amount for a user identified by their UID.
         """
         amount_value = self.Amount_entry.text()
         uid_value = self.uid_entry.text()
@@ -273,20 +259,8 @@ class ApiDataInputForm(QMainWindow):
             QMessageBox.critical(self, "Error", f"Network error: {str(e)}")
 
     def create_user(self):
-        """"
+        """
         Send a POST request to create a new user.
-
-        Collects user details from input fields and sends a request to the server
-        to create a new user. The request includes optional class information.
-
-        Sends a POST request to either:
-        'http://192.168.68.68:8080/api/User/create/with-class' or
-        'http://192.168.68.68:8080/api/User/create/without-class'
-
-        If the request is successful, a success message is displayed.
-
-        Returns:
-            None
         """
         class_value = self.class_entry.text()
         uid_value = self.uid_entry.text()
@@ -311,18 +285,6 @@ class ApiDataInputForm(QMainWindow):
     def delete_user_by_uid(self):
         """
         Send a DELETE request to delete a user by UID.
-
-        Validates the UID and sends a request to the server to delete the specified user.
-
-        Raises a warning message if the UID is not provided.
-
-        Sends a DELETE request to the endpoint:
-        'http://192.168.68.68:8080/api/User/delete/{user_uid}'
-
-        If the request is successful, a success message is displayed.
-
-        Returns:
-            None
         """
         user_uid = self.uid_entry.text()
         if not user_uid:
@@ -337,19 +299,6 @@ class ApiDataInputForm(QMainWindow):
     def update_user_by_uid(self):
         """
         Send a PUT request to update a user by UID.
-
-        Collects updated user details from input fields and sends a request to the server
-        to update the specified user.
-
-        Raises a warning message if the UID is not provided.
-
-        Sends a PUT request to the endpoint:
-        'http://192.168.68.68:8080/api/User/{user_id}'
-
-        If the request is successful, a success message is displayed.
-
-        Returns:
-            None
         """
         user_id = self.uid_entry.text()
         if not user_id:
@@ -369,7 +318,7 @@ class ApiDataInputForm(QMainWindow):
 
         self.send_request(url, 'PUT', data, headers, "User updated successfully!")
 
-    def send_request(self, url, method, data=None, headers=None, success_message=None, return_response=False):
+    def send_request(self, url, method, data=None, headers=None, success_message=None, on_success=None):
         try:
             if method == 'POST':
                 response = requests.post(url, json=data, headers=headers, verify=False)
@@ -383,33 +332,14 @@ class ApiDataInputForm(QMainWindow):
                 raise ValueError("Unsupported HTTP method")
 
             if response.status_code == 200:
-                if success_message:
+                if on_success:
+                    on_success(response)
+                elif success_message:
                     QMessageBox.information(self, "Success", success_message)
-                if return_response:
-                    return response.json()
             else:
                 QMessageBox.critical(self, "Error", f"Error: {response.status_code}\n{response.text}")
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(self, "Error", f"Network error: {str(e)}")
-        return None
-
-    def load_user_data(self):
-        user_uid = self.uid_entry.text()
-        if not user_uid:
-            QMessageBox.warning(self, "Warning", "Please enter a user UID to load.")
-            return
-
-        url = f'http://192.168.68.68:8080/api/User/read/by-uid?uid={user_uid}'
-        headers = {'Content-Type': 'application/json'}
-
-        data = self.send_request(url, 'GET', headers=headers, return_response=True)
-        if data:
-            self.firstname_entry.setText(data.get("firstName", ""))
-            self.lastname_entry.setText(data.get("lastName", ""))
-            self.org_entry.setText(data.get("organisation", ""))
-            self.class_entry.setText(data.get("schoolClass", ""))
-            self.uid_entry.setText(str(data.get("uid", "")))
-            QMessageBox.information(self, "Success", "User data loaded successfully!")
 
     def update_ui(self, operation_var):
         """
@@ -520,13 +450,7 @@ class ApiDataInputForm(QMainWindow):
         Load user data based on UID.
 
         Validates the UID and sends a GET request to the server to retrieve user data.
-
-        Raises a warning message if the UID is not provided.
-
-        Sends a GET request to the endpoint:
-        'http://192.168.68.68:8080/api/User/read/by-uid?uid={user_uid}'
-
-        If the request is successful, a success message is displayed.
+        Fills the form fields with the loaded user data if found.
 
         Returns:
             None
@@ -539,7 +463,21 @@ class ApiDataInputForm(QMainWindow):
         url = f'http://192.168.68.68:8080/api/User/read/by-uid?uid={user_uid}'
         headers = {'Content-Type': 'application/json'}
 
-        self.send_request(url, 'GET', headers=headers, success_message="User data loaded successfully!")
+        def fill_fields(response):
+            try:
+                data = response.json()
+                # Adjust keys as per your API's response structure:
+                self.firstname_entry.setText(data.get("firstName", ""))
+                self.lastname_entry.setText(data.get("lastName", ""))
+                self.org_entry.setText(data.get("organisation", ""))
+                self.class_entry.setText(data.get("schoolClass", ""))
+                # Normally UID is already filled, but you can update if needed:
+                self.uid_entry.setText(data.get("uid", user_uid))
+                QMessageBox.information(self, "Success", "User data loaded successfully!")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to parse user data: {str(e)}")
+
+        self.send_request(url, 'GET', headers=headers, on_success=fill_fields)
 
     def center(self):
         """
