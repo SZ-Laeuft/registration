@@ -219,7 +219,7 @@ class ApiDataInputForm(QMainWindow):
                Raises a warning message if the UID or amount is not provided.
 
                Sends a PUT request to the endpoint:
-               'http://szl-server:8080/api/SetDonationAmount/{uid_value}'
+               'http://192.168.68.68:8080/api/SetDonationAmount/{uid_value}'
 
                If the request is successful, a success message is displayed.
 
@@ -239,7 +239,7 @@ class ApiDataInputForm(QMainWindow):
             "amount": self.Amount_entry.text().lower(),
         }
 
-        url = f'http://szl-server:8080/api/SetDonationAmount/{uid_value}'
+        url = f'http://192.168.68.68:8080/api/SetDonationAmount/{uid_value}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'PUT', data, headers, "User Amount set successfully!")
@@ -249,7 +249,7 @@ class ApiDataInputForm(QMainWindow):
         if not uid_value:
             QMessageBox.warning(self, "Warning", "Please enter a user UID.")
             return
-        url = f'http://szl-server:8080/api/SetGiftCollected/{uid_value}'
+        url = f'http://192.168.68.68:8080/api/SetGiftCollected/{uid_value}'
         headers = {'Content-Type': 'application/json'}
         try:
             response = requests.put(url, json={}, headers=headers, verify=False)
@@ -280,8 +280,8 @@ class ApiDataInputForm(QMainWindow):
         to create a new user. The request includes optional class information.
 
         Sends a POST request to either:
-        'http://szl-server:8080/api/User/create/with-class' or
-        'http://szl-server:8080/api/User/create/without-class'
+        'http://192.168.68.68:8080/api/User/create/with-class' or
+        'http://192.168.68.68:8080/api/User/create/without-class'
 
         If the request is successful, a success message is displayed.
 
@@ -302,9 +302,9 @@ class ApiDataInputForm(QMainWindow):
         headers = {'Content-Type': 'application/json'}
 
         if class_value:
-            url = 'http://szl-server:8080/api/User/create/with-class'
+            url = 'http://192.168.68.68:8080/api/User/create/with-class'
         else:
-            url = 'http://szl-server:8080/api/User/create/without-class'
+            url = 'http://192.168.68.68:8080/api/User/create/without-class'
 
         self.send_request(url, 'POST', data, headers, "User created successfully!")
 
@@ -317,7 +317,7 @@ class ApiDataInputForm(QMainWindow):
         Raises a warning message if the UID is not provided.
 
         Sends a DELETE request to the endpoint:
-        'http://szl-server:8080/api/User/delete/{user_uid}'
+        'http://192.168.68.68:8080/api/User/delete/{user_uid}'
 
         If the request is successful, a success message is displayed.
 
@@ -329,7 +329,7 @@ class ApiDataInputForm(QMainWindow):
             QMessageBox.warning(self, "Warning", "Please enter a user UID.")
             return
 
-        url = f'http://szl-server:8080/api/User/delete/{user_uid}'
+        url = f'http://192.168.68.68:8080/api/User/delete/{user_uid}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'DELETE', headers=headers, success_message="User deleted successfully!")
@@ -344,7 +344,7 @@ class ApiDataInputForm(QMainWindow):
         Raises a warning message if the UID is not provided.
 
         Sends a PUT request to the endpoint:
-        'http://szl-server:8080/api/User/{user_id}'
+        'http://192.168.68.68:8080/api/User/{user_id}'
 
         If the request is successful, a success message is displayed.
 
@@ -364,7 +364,7 @@ class ApiDataInputForm(QMainWindow):
             "organisation": self.org_entry.text().lower() or None
         }
 
-        url = f'http://szl-server:8080/api/User/{user_id}'
+        url = f'http://192.168.68.68:8080/api/User/{user_id}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'PUT', data, headers, "User updated successfully!")
@@ -516,7 +516,7 @@ class ApiDataInputForm(QMainWindow):
         Raises a warning message if the UID is not provided.
 
         Sends a GET request to the endpoint:
-        'http://szl-server:8080/api/User/read/by-uid?uid={user_uid}'
+        'http://192.168.68.68:8080/api/User/read/by-uid?uid={user_uid}'
 
         If the request is successful, a success message is displayed.
 
@@ -528,7 +528,7 @@ class ApiDataInputForm(QMainWindow):
             QMessageBox.warning(self, "Warning", "Please enter a user UID to load.")
             return
 
-        url = f'http://szl-server:8080/api/User/read/by-uid?uid={user_uid}'
+        url = f'http://192.168.68.68:8080/api/User/read/by-uid?uid={user_uid}'
         headers = {'Content-Type': 'application/json'}
 
         self.send_request(url, 'GET', headers=headers, success_message="User data loaded successfully!")
