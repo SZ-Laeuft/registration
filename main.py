@@ -385,7 +385,7 @@ class ApiDataInputForm(QMainWindow):
             self.class_entry.hide()
             self.Amount_label.hide()
             self.Amount_entry.hide()
-            self.load_button.show()
+            self.load_button.hide()
         elif operation_var == 3:  # Update User
             self.uid_label.show()
             self.uid_entry.show()
