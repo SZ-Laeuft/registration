@@ -369,7 +369,7 @@ class ApiDataInputForm(QMainWindow):
 
         self.send_request(url, 'PUT', data, headers, "User updated successfully!")
 
-    def send_request(self, url, method, data=None, headers=None, success_message=None):
+    def send_request(self, url, method, data=None, headers=None, success_message=None, return_response=False):
         try:
             if method == 'POST':
                 response = requests.post(url, json=data, headers=headers, verify=False)
@@ -385,10 +385,31 @@ class ApiDataInputForm(QMainWindow):
             if response.status_code == 200:
                 if success_message:
                     QMessageBox.information(self, "Success", success_message)
+                if return_response:
+                    return response.json()
             else:
                 QMessageBox.critical(self, "Error", f"Error: {response.status_code}\n{response.text}")
         except requests.exceptions.RequestException as e:
             QMessageBox.critical(self, "Error", f"Network error: {str(e)}")
+        return None
+
+    def load_user_data(self):
+        user_uid = self.uid_entry.text()
+        if not user_uid:
+            QMessageBox.warning(self, "Warning", "Please enter a user UID to load.")
+            return
+
+        url = f'http://192.168.68.68:8080/api/User/read/by-uid?uid={user_uid}'
+        headers = {'Content-Type': 'application/json'}
+
+        data = self.send_request(url, 'GET', headers=headers, return_response=True)
+        if data:
+            self.firstname_entry.setText(data.get("firstName", ""))
+            self.lastname_entry.setText(data.get("lastName", ""))
+            self.org_entry.setText(data.get("organisation", ""))
+            self.class_entry.setText(data.get("schoolClass", ""))
+            self.uid_entry.setText(str(data.get("uid", "")))
+            QMessageBox.information(self, "Success", "User data loaded successfully!")
 
     def update_ui(self, operation_var):
         """
