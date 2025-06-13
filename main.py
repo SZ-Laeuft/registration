@@ -370,21 +370,6 @@ class ApiDataInputForm(QMainWindow):
         self.send_request(url, 'PUT', data, headers, "User updated successfully!")
 
     def send_request(self, url, method, data=None, headers=None, success_message=None):
-        """
-        Send an HTTP request and handle the response.
-
-        Args:
-            url (str): The URL to send the request to.
-            method (str): The HTTP method to use ('POST', 'DELETE', 'PUT').
-            data (dict, optional): The data to send in the request body.
-            headers (dict, optional): The headers to include in the request.
-            success_message (str, optional): The message to display on successful request.
-
-        Handles network errors and displays appropriate messages based on the response.
-
-        Returns:
-            None
-        """
         try:
             if method == 'POST':
                 response = requests.post(url, json=data, headers=headers, verify=False)
@@ -392,6 +377,8 @@ class ApiDataInputForm(QMainWindow):
                 response = requests.delete(url, headers=headers, verify=False)
             elif method == 'PUT':
                 response = requests.put(url, json=data, headers=headers, verify=False)
+            elif method == 'GET':
+                response = requests.get(url, headers=headers, verify=False)
             else:
                 raise ValueError("Unsupported HTTP method")
 
