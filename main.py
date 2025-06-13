@@ -466,13 +466,12 @@ class ApiDataInputForm(QMainWindow):
         def fill_fields(response):
             try:
                 data = response.json()
-                # Adjust keys as per your API's response structure:
-                self.firstname_entry.setText(data.get("firstName", ""))
-                self.lastname_entry.setText(data.get("lastName", ""))
-                self.org_entry.setText(data.get("organisation", ""))
-                self.class_entry.setText(data.get("schoolClass", ""))
-                # Normally UID is already filled, but you can update if needed:
-                self.uid_entry.setText(data.get("uid", user_uid))
+                # Always convert to string for setText
+                self.firstname_entry.setText(str(data.get("firstName", "")) or "")
+                self.lastname_entry.setText(str(data.get("lastName", "")) or "")
+                self.org_entry.setText(str(data.get("organisation", "")) or "")
+                self.class_entry.setText(str(data.get("schoolClass", "")) or "")
+                self.uid_entry.setText(str(data.get("uid", user_uid)) or "")
                 QMessageBox.information(self, "Success", "User data loaded successfully!")
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"Failed to parse user data: {str(e)}")
